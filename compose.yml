@@ -8,18 +8,20 @@ services:
       - "1433:1433"
 
   wait:
-      image: flcdrg/wait-for-mssql:latest
-      command: --max 10 --verbose true
+    image: flcdrg/wait-for-mssql:latest
+    command: --max 10 --delay 10 --verbose true --database AdventureWorks
 
-      depends_on:
-        - mssql
+    depends_on:
+      - mssql
 
   web:
     depends_on:
-      - wait
+      wait:
+        condition: service_completed_successfully
     build: .
     ports:
       - "8000:8000"
     environment:
       - FASTAPI_ENV=development
+      - SQL_CONNECTION_STRING=SERVER=mssql;DATABASE=AdventureWorks;UID=sa;PWD=yourStrong(!)Password;TrustServerCertificate=yes
     command: ["fastapi", "dev", "main.py", "--host", "0.0.0.0"]

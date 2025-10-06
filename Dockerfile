@@ -22,6 +22,8 @@ RUN ls -al
 
 FROM python:3.13-slim
 
+RUN apt-get update && apt-get install -y libltdl7 libkrb5-3 libgssapi-krb5-2 && rm -rf /var/lib/apt/lists/*
+
 RUN groupadd --system --gid 999 nonroot \
  && useradd --system --gid 999 --uid 999 --create-home nonroot
 
