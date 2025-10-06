@@ -1,0 +1,25 @@
+services:
+  mssql:
+    image: chriseaton/adventureworks:latest
+    environment:
+      MSSQL_SA_PASSWORD: "yourStrong(!)Password"
+      ACCEPT_EULA: "Y"
+    ports:
+      - "1433:1433"
+
+  wait:
+      image: flcdrg/wait-for-mssql:latest
+      command: --max 10 --verbose true
+
+      depends_on:
+        - mssql
+
+  web:
+    depends_on:
+      - wait
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      - FASTAPI_ENV=development
+    command: ["fastapi", "dev", "main.py", "--host", "0.0.0.0"]
